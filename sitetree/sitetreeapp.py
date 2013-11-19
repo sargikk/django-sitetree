@@ -193,6 +193,9 @@ class SiteTree(object):
                 alias = i18n_tree_alias
         return alias
 
+    def is_app_with_menu(self):
+        return self.is_app_with_menu()
+
     def get_sitetree(self, alias):
         """Gets site tree items from the given site tree.
         Caches result to dictionary.
@@ -201,7 +204,7 @@ class SiteTree(object):
         """
         self.cache_init()
         sitetree_needs_caching = False
-        if self._global_context.current_app != 'admin':
+        if self.is_app_with_menu():
             # We do not need i18n for a tree rendered in Admin dropdown.
             alias = self.resolve_tree_i18n_alias(alias)
         sitetree = self.get_cache_entry('sitetrees', alias)
@@ -552,7 +555,7 @@ class SiteTree(object):
         return my_template.render(context)
 
     def get_children(self, tree_alias, item):
-        if self._global_context.current_app != 'admin':
+        if self.is_app_with_menu():
             # We do not need i18n for a tree rendered in Admin dropdown.
             tree_alias = self.resolve_tree_i18n_alias(tree_alias)
         return self.get_cache_entry('parents', tree_alias)[item]
@@ -573,7 +576,7 @@ class SiteTree(object):
         NB: We do not apply any filters to sitetree in admin app.
         """
         items_out = copy(items)
-        if self._global_context.current_app != 'admin':
+        if self.is_app_with_menu():
             for item in items:
                 no_access = not self.check_access(item, self._global_context)
                 hidden_for_nav_type = navigation_type is not None and not getattr(item, 'in' + navigation_type, False)
