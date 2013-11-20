@@ -11,7 +11,10 @@ def load_class(path):
     """
 
     try:
-        mod_name, cls_name = path.rsplit('.', 1)
+        splitted = path.rsplit('.', 1)
+        if len(splitted) == 1:
+            raise ImproperlyConfigured('Empty module name!"')
+        mod_name, cls_name = splitted
         mod = import_module(mod_name)
     except AttributeError as e:
         raise ImproperlyConfigured('Error importing {0}: "{1}"'.format(mod_name, e))

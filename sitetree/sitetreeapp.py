@@ -194,7 +194,7 @@ class SiteTree(object):
         return alias
 
     def is_app_with_menu(self):
-        return self.is_app_with_menu()
+        return self._global_context.current_app != 'admin'
 
     def get_sitetree(self, alias):
         """Gets site tree items from the given site tree.
@@ -277,7 +277,7 @@ class SiteTree(object):
         request path against URL of given tree item.
 
         """
-        if self._global_context.current_app == 'admin':
+        if not self.is_app_with_menu():
             return None
 
         current_item = None

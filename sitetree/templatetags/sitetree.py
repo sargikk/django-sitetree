@@ -5,7 +5,11 @@ from ..utils import load_class
 register = template.Library()
 
 # All utility methods are implemented in SiteTree class
-sitetree = load_class(getattr(settings, 'SITE_TREE_CLASS', 'sitetree.sitetreeapp.SiteTree'))
+
+def get_sitetree_cls():
+    return load_class(getattr(settings, 'SITE_TREE_CLASS', 'sitetree.sitetreeapp.SiteTree'))
+
+sitetree = get_sitetree_cls()()
 
 @register.tag
 def sitetree_tree(parser, token):

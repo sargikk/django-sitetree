@@ -1,12 +1,14 @@
+from django.core.exceptions import ImproperlyConfigured
 from django.utils import unittest
 from django.utils.translation import activate
 from django import template
 from django.core import urlresolvers
-
+from django.conf import settings
 from sitetree.models import Tree, TreeItem
 from sitetree.sitetreeapp import SiteTree, SiteTreeError, register_items_hook, register_i18n_trees
 
 from django.conf.urls import patterns, url
+from sitetree.templatetags.sitetree import get_sitetree_cls
 
 
 urlpatterns = patterns('',
@@ -377,3 +379,23 @@ class TreeTest(unittest.TestCase):
         self.assertFalse(children[1].is_current)
         self.assertTrue(children[2].is_current)
         self.assertFalse(children[3].is_current)
+
+
+class NewSiteTree(SiteTree):
+    pass
+
+
+class TestCustomSiteTreeClass(unittest.TestCase):
+
+    def test_custom_site_tree_class(self):
+        settings.SITE_TREE_CLASS = 'sitetree.tests.NewSiteTree'
+        site_tree = get_sitetree_cls()
+        self.assertEqual(site_tree, NewSiteTree)
+
+    def test_wrong_site_tree_class_name(self):
+        settings.SITE_TREE_CLASS = 'sitetree.tests.NewSiteTresdsde'
+        self.assertRaises(ImproperlyConfigured, get_sitetree_cls)
+        settings.SITE_TREE_CLASS = 'sitetree.testssdsd.NewSiteTree'
+        self.assertRaises(ImportError, get_sitetree_cls)
+        settings.SITE_TREE_CLASS = 'NewSiteTree'
+        self.assertRaises(ImproperlyConfigured, get_sitetree_cls)
